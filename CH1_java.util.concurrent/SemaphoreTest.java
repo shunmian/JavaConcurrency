@@ -1,0 +1,63 @@
+import java.lang.reflect.Array;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.plaf.synth.SynthScrollBarUI;
+
+class SemaphoreTest {
+
+  int count = 0;
+  // AtomicInteger count = new AtomicInteger(10);
+
+  Semaphore s = new Semaphore(100000);
+
+  class MyRunnable implements Runnable {
+
+    public void run() {
+      for (int i = 0; i < 100000; i++) {
+        increment();
+      }
+    }
+
+    void increment() {
+
+      try {
+        s.acquire();
+        count = count + 1;
+        s.release();
+      } catch (Exception e) {
+
+      }
+
+      // synchronized(this.getClass()) {
+
+      // count.getAndIncrement();
+      // }
+    }
+  }
+
+  void process() {
+    int n = 2;
+    Thread[] threads = new Thread[n];
+    for (int i = 0; i < n; i++) {
+      MyRunnable my = new MyRunnable();
+      Thread t = new Thread(my);
+      t.start();
+      threads[i] = t;
+    }
+    try {
+      for (Thread t : threads) {
+        t.join();
+      }
+    } catch (Exception e) {
+      System.out.println("error" + e);
+    }
+    System.out.println("Finished, totoal: " + count);
+  }
+
+  public static void main(String[] args) {
+    SemaphoreTest ait = new SemaphoreTest();
+    // for (int i = 0; i < 20; i++)
+    ait.process();
+  }
+}
