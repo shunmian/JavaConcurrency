@@ -29,9 +29,9 @@ class BoundedBuffer<E> {
   }
 
   public E take() throws InterruptedException {
-    availableSpaces.acquire();
+    availableItems.acquire();
     E e = doExtract();
-    availableItems.release();
+    availableSpaces.release();
     return e;
   }
 

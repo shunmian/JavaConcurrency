@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+
 public class BoundedBufferTest { 
+
+  int LOCKUP_DETECT_TIMEOUT = 5000; //in ms
 
   @Test
   public void testIsEmptyWhenConstructed() {
@@ -25,5 +28,33 @@ public class BoundedBufferTest {
       assertFalse("Should be full when constructed", boundedBuffer.isEmpty());
     } catch(Exception e) {
     }
+  }
+
+  @Test
+  public void testTakeBlocksWhenEmpty() {
+    final BoundedBuffer<Integer> boundedBuffer = new BoundedBuffer<Integer>(10);
+    Thread taker = new  Thread() {
+      public void run() {
+        try {
+          int unused = boundedBuffer.take();
+          BoundedBufferTest.fail();
+        } catch (InterruptedException suceess) {
+        }
+      }
+    };
+
+    try {
+      taker.start();
+      Thread.sleep(LOCKUP_DETECT_TIMEOUT);
+      taker.interrupt();
+      taker.join(LOCKUP_DETECT_TIMEOUT);
+      assertFalse("taker thread should die", taker.isAlive());
+    } catch (Exception unexpected) {
+      BoundedBufferTest.fail();
+    }
+  }
+
+  static void fail() {
+    assertTrue("Should fail", false);
   }
 }
