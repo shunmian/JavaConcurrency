@@ -10,12 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-public class BoundedBufferMultiProducerConsumerTest { 
-
-
-  // @Test
-  public void test() {
-    new BBT(10, 10, 10000).test();
+public class PutTakeTestFactory { 
+  @Test
+  public void testABC() {
+    new PutTakeTest(10, 10, 10000).test();
+    PutTakeTest.pool.shutdown();
   }
-
 }

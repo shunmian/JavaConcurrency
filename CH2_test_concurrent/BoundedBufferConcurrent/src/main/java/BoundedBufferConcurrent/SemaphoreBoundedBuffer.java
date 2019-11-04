@@ -1,20 +1,24 @@
 package BoundedBufferConcurrent;
+
 import java.util.concurrent.Semaphore;
 
 import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;;
 
-class BoundedBuffer<E> {
+@ThreadSafe
+public class SemaphoreBoundedBuffer<E> {
   private final Semaphore availableItems, availableSpaces;
-  
-  @GuardedBy("this") final E[] items;
-  @GuardedBy("this") private final int capacity;
-  @GuardedBy("this") private int putPosition = 0, takePosition = 0;
+  @GuardedBy("this")
+  private final E[] items;
+  @GuardedBy("this")
+  private int putPosition = 0, takePosition = 0;
 
-  public BoundedBuffer(int capacity) {
+  public SemaphoreBoundedBuffer(int capacity) {
+    if (capacity <= 0)
+      throw new IllegalArgumentException();
     availableItems = new Semaphore(0);
     availableSpaces = new Semaphore(capacity);
     items = (E[]) new Object[capacity];
-    this.capacity = capacity;
   }
 
   public boolean isEmpty() {
@@ -33,20 +37,22 @@ class BoundedBuffer<E> {
 
   public E take() throws InterruptedException {
     availableItems.acquire();
-    E e = doExtract();
+    E item = doExtract();
     availableSpaces.release();
-    return e;
+    return item;
   }
 
-  private synchronized void doInsert(E e) {
-    this.items[this.putPosition] = e;
-    this.putPosition = this.putPosition + 1 <= this.capacity ? this.putPosition + 1: 0;
+  private synchronized void doInsert(E x) {
+    int i = putPosition;
+    items[i] = x;
+    putPosition = (++i == items.length) ? 0 : i;
   }
 
   private synchronized E doExtract() {
-    E e = this.items[this.takePosition];
-    this.items[this.takePosition] = null;
-    this.takePosition = this.takePosition + 1 <= this.capacity ? this.takePosition + 1 : 0;
-    return e;
+    int i = takePosition;
+    E x = items[i];
+    items[i] = null;
+    takePosition = (++i == items.length) ? 0 : i;
+    return x;
   }
 }

@@ -2,6 +2,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - PutTakeTest",
+      "request": "launch",
+      "mainClass": "BoundedBufferConcurrent.PutTakeTest",
+      "projectName": "BoundedBufferConcurrent"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - BBT",
       "request": "launch",
       "mainClass": "BoundedBufferConcurrent.BBT",
