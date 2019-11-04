@@ -47,10 +47,9 @@ public class BBT {
       System.out.println("takeSum" + takeSum.get());
       assertEquals(putSum.get(), takeSum.get());
     } catch (Exception e) {
+      // throw e;
       throw new RuntimeException(e);
-    } finally {
-      pool.shutdown();
-    }
+    } 
   }
 
   static int xorShift(int y) {
@@ -61,6 +60,7 @@ public class BBT {
   }
 
   class Producer implements Runnable {
+
     public void run() {
       try {
         int seed = (this.hashCode() ^ (int)System.nanoTime());
@@ -74,6 +74,8 @@ public class BBT {
         putSum.getAndAdd(sum);
         barrier.await();
       } catch (Exception e) {
+        System.out.println("Producer exception==>" + e);
+        // throw e;
         throw new RuntimeException(e);
       }
     } 
@@ -82,8 +84,8 @@ public class BBT {
   class Consumer implements Runnable {
     public void run() {
       try {
-        int sum = 0;
         barrier.wait();
+        int sum = 0;
         for (int i = nTrials; i > 0; --i) {
           Integer item = bb.take();
           sum = sum + item;
@@ -91,9 +93,17 @@ public class BBT {
         takeSum.getAndAdd(sum);
         barrier.await();
       } catch (Exception e) {
+        System.out.println("consumer exception==>" + e);
         throw new RuntimeException(e);
       }
     } 
+  }
+
+  @Test
+  public static void main(String[] args) {
+    System.out.println("hello");
+    new BBT(10, 10, 100).test();
+    pool.shutdown();
   }
 
 }

@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - BBT",
+      "request": "launch",
+      "mainClass": "BoundedBufferConcurrent.BBT",
+      "projectName": "BoundedBufferConcurrent"
+    }
+  ]
+}

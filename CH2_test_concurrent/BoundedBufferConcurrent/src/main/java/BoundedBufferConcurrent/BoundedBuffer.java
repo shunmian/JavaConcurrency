@@ -1,17 +1,20 @@
 package BoundedBufferConcurrent;
 import java.util.concurrent.Semaphore;
 
+import net.jcip.annotations.GuardedBy;
+
 class BoundedBuffer<E> {
   private final Semaphore availableItems, availableSpaces;
-  private final E[] items;
-  private int putPosition = 0, takePosition = 0;
-  private int capacity;
+  
+  @GuardedBy("this") final E[] items;
+  @GuardedBy("this") private final int capacity;
+  @GuardedBy("this") private int putPosition = 0, takePosition = 0;
 
   public BoundedBuffer(int capacity) {
-    this.capacity = capacity;
     availableItems = new Semaphore(0);
     availableSpaces = new Semaphore(capacity);
-    items = (E[])new Object[capacity];
+    items = (E[]) new Object[capacity];
+    this.capacity = capacity;
   }
 
   public boolean isEmpty() {
@@ -35,15 +38,15 @@ class BoundedBuffer<E> {
     return e;
   }
 
-  public void doInsert(E e) {
+  private synchronized void doInsert(E e) {
     this.items[this.putPosition] = e;
     this.putPosition = this.putPosition + 1 <= this.capacity ? this.putPosition + 1: 0;
   }
 
-  public E doExtract() {
+  private synchronized E doExtract() {
     E e = this.items[this.takePosition];
     this.items[this.takePosition] = null;
-    this.takePosition = this.takePosition + 1 <= this.capacity ? this.takePosition + 1: 0;
+    this.takePosition = this.takePosition + 1 <= this.capacity ? this.takePosition + 1 : 0;
     return e;
   }
 }

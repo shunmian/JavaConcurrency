@@ -26,18 +26,18 @@ class BoundedBuffer<E> {
   }
 
   public E take() throws InterruptedException {
-    availableSpaces.acquire();
+    availableItems.acquire();
     E e = doExtract();
-    availableItems.release();
+    availableSpaces.release();
     return e;
   }
 
-  public doInsert(E e) {
+  synchronized public doInsert(E e) {
     this.items[this.putPosition] = e;
     this.putPosition = this.putPosition + 1 <= this.capacity ? this.putPosition + 1: 0;
   }
 
-  public E doExtract() {
+  synchronized public E doExtract() {
     E e = this.items[this.takePosition];
     this.items[this.takePosition] = null;
     this.takePosition = this.takePosition + 1 <= this.capacity ? this.takePosition + 1: 0;

@@ -13,7 +13,7 @@ import org.junit.Test;
 public class BoundedBufferMultiProducerConsumerTest { 
 
 
-  @Test
+  // @Test
   public void test() {
     new BBT(10, 10, 10000).test();
   }
