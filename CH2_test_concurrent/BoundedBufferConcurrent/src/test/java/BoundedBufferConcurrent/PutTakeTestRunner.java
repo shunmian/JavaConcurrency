@@ -10,10 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-public class PutTakeTestFactory { 
+public class PutTakeTestRunner { 
   @Test
   public void testABC() {
-    new PutTakeTest(10, 10, 10000).test();
+    new PutTakeTest(10, 10, 100000000).test();
     PutTakeTest.pool.shutdown();
   }
 }
