@@ -6,7 +6,7 @@ import java.util.concurrent.RecursiveTask;
 
 public class ForkAndJoinAddition extends RecursiveTask<Long> {
 
-  final long THRESH_HOLD = 2;
+  final long THRESH_HOLD = 10000000000L;
 
   long start;
   long end;
